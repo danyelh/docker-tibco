@@ -1,0 +1,5 @@
+docker service create -d -p 7222:7222 --name custom-ems-server --network bwce_sample_network gcr.io/test-tibco-bw-5/customems:1.0.0
+
+docker service create -d --replicas=3 --name emssample --network bwce_sample_network gcr.io/test-tibco-bw-5/emssample:3.0.0
+
+docker service create -d --replicas=3 --name emsclient --network bwce_sample_network gcr.io/test-tibco-bw-5/emsclient:1.0.0

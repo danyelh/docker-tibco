@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: bw-sample-rest
+  labels:
+    app: samplerest
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+        app: samplerest
+  template:
+    metadata:
+      labels:
+        app: samplerest
+    spec:
+      containers:
+      - name: samplerest
+        image: gcr.io/test-tibco-bw-5/sampleproject:1.0.0
+        ports:
+        - name: bw-sample-port
+          containerPort: 8081

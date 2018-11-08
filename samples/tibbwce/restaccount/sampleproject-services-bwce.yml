@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bwce-account-rest
+  labels:
+    app: bwce-account-rest
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8080
+    targetPort: bwce-rest-port
+  selector:
+    app: bwce-account-rest

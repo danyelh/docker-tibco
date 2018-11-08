@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:ns2="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:pfx="http://www.tibco.com/schemas/sampleproject/Schema.xsd">
+    <xsd:import namespace="http://www.tibco.com/schemas/sampleproject/Schema.xsd" schemaLocation="/AccountSchema.xsd"/>
+    <pd:name>Account.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType ref="pfx:Request"/>
+    <pd:startX>30</pd:startX>
+    <pd:startY>35</pd:startY>
+    <pd:returnBindings>
+        <Response>
+            <xsl:value-of select="$Render-JSON/ns2:ActivityOutputClass/jsonString"/>
+        </Response>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="Response" type="xsd:string"/>
+    </pd:endType>
+    <pd:endX>562</pd:endX>
+    <pd:endY>35</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1521305397709</pd:targetNamespace>
+    <pd:activity name="Log">
+        <pd:type>com.tibco.pe.core.WriteToLogActivity</pd:type>
+        <pd:resourceType>ae.activities.log</pd:resourceType>
+        <pd:x>159</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <role>User</role>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInput>
+                <message>
+                    <xsl:value-of select="tib:render-xml($Start/pfx:Request)"/>
+                </message>
+            </ns:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Render JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>430</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <ValidateIntputEnable>false</ValidateIntputEnable>
+            <removeRootElementForInput>false</removeRootElementForInput>
+            <ActivityInputEditor ref="pfx:Response"/>
+        </config>
+        <pd:inputBindings>
+            <ns2:ActivityInputClass>
+                <pfx:Response>
+                    <pfx:AccountId>
+                        <xsl:value-of select="$Start/pfx:Request/pfx:AccountId"/>
+                    </pfx:AccountId>
+                    <pfx:AccountBeneficiary>
+                        <xsl:value-of select="$GenerateRandom/javaCodeActivityOutput/randomUUID"/>
+                    </pfx:AccountBeneficiary>
+                    <pfx:AccountBalance>
+                        <xsl:value-of select="$GenerateRandom/javaCodeActivityOutput/randomNumber"/>
+                    </pfx:AccountBalance>
+                    <pfx:BalanceDate>
+                        <xsl:value-of select="current-dateTime()"/>
+                    </pfx:BalanceDate>
+                </pfx:Response>
+            </ns2:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="GenerateRandom">
+        <pd:type>com.tibco.plugin.java.JavaActivity</pd:type>
+        <pd:resourceType>ae.javapalette.javaActivity</pd:resourceType>
+        <pd:x>285</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <fileName>AccountGenerateRandom</fileName>
+            <packageName>Account</packageName>
+            <fullsource>package Account;
+import java.util.*;
+import java.io.*;
+public class AccountGenerateRandom{
+/****** START SET/GET METHOD, DO NOT MODIFY *****/
+	protected String randomUUID = "";
+	protected int randomNumber = 0;
+	public String getrandomUUID() {
+		return randomUUID;
+	}
+	public void setrandomUUID(String val) {
+		randomUUID = val;
+	}
+	public int getrandomNumber() {
+		return randomNumber;
+	}
+	public void setrandomNumber(int val) {
+		randomNumber = val;
+	}
+/****** END SET/GET METHOD, DO NOT MODIFY *****/
+	public AccountGenerateRandom() {
+	}
+	public void invoke() throws Exception {
+/* Available Variables: DO NOT MODIFY
+	Out : String randomUUID
+	Out : int randomNumber
+* Available Variables: DO NOT MODIFY *****/
+	this.randomUUID=UUID.randomUUID().toString();
+	randomNumber = (int)(Math.random() * 1000000 + 1);
+
+}
+}
+</fullsource>
+            <outputData>
+                <row>
+                    <fieldName>randomUUID</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>randomNumber</fieldName>
+                    <fieldType>int</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+            </outputData>
+            <byteCode>
+                <class>
+                    <name>AccountGenerateRandom</name>
+                    <byteCode>yv66vgAAADMAMwkACgAhCQAKACIKAAsAIwgAJAoAJQAmCgAlACcKACgAKQZBLoSAAAAAAAcAKgcAKwEACnJhbmRvbVVVSUQBABJMamF2YS9sYW5nL1N0cmluZzsBAAxyYW5kb21OdW1iZXIBAAFJAQANZ2V0cmFuZG9tVVVJRAEAFCgpTGphdmEvbGFuZy9TdHJpbmc7AQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEADXNldHJhbmRvbVVVSUQBABUoTGphdmEvbGFuZy9TdHJpbmc7KVYBAA9nZXRyYW5kb21OdW1iZXIBAAMoKUkBAA9zZXRyYW5kb21OdW1iZXIBAAQoSSlWAQAGPGluaXQ+AQADKClWAQAGaW52b2tlAQAKRXhjZXB0aW9ucwcALAEAClNvdXJjZUZpbGUBABpBY2NvdW50R2VuZXJhdGVSYW5kb20uamF2YQwADAANDAAOAA8MABoAGwEAAAcALQwADAAuDAAvABEHADAMADEAMgEAHUFjY291bnQvQWNjb3VudEdlbmVyYXRlUmFuZG9tAQAQamF2YS9sYW5nL09iamVjdAEAE2phdmEvbGFuZy9FeGNlcHRpb24BAA5qYXZhL3V0aWwvVVVJRAEAEigpTGphdmEvdXRpbC9VVUlEOwEACHRvU3RyaW5nAQAOamF2YS9sYW5nL01hdGgBAAZyYW5kb20BAAMoKUQAIQAKAAsAAAACAAQADAANAAAABAAOAA8AAAAGAAEAEAARAAEAEgAAAB0AAQABAAAABSq0AAGwAAAAAQATAAAABgABAAAACQABABQAFQABABIAAAAiAAIAAgAAAAYqK7UAAbEAAAABABMAAAAKAAIAAAAMAAUADQABABYAFwABABIAAAAdAAEAAQAAAAUqtAACrAAAAAEAEwAAAAYAAQAAAA8AAQAYABkAAQASAAAAIgACAAIAAAAGKhu1AAKxAAAAAQATAAAACgACAAAAEgAFABMAAQAaABsAAQASAAAANAACAAEAAAAQKrcAAyoSBLUAASoDtQACsQAAAAEAEwAAABIABAAAABUABAAGAAoABwAPABYAAQAcABsAAgASAAAAOQAFAAEAAAAZKrgABbYABrUAASq4AAcUAAhrD2OOtQACsQAAAAEAEwAAAA4AAwAAABwACgAdABgAHwAdAAAABAABAB4AAQAfAAAAAgAg</byteCode>
+                </class>
+            </byteCode>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Log</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Log</pd:from>
+        <pd:to>GenerateRandom</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Render JSON</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>GenerateRandom</pd:from>
+        <pd:to>Render JSON</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

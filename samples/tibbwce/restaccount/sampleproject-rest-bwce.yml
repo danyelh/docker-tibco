@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: bwce-account-rest
+  labels:
+    app: bwce-account-rest
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+        app: bwce-account-rest
+  template:
+    metadata:
+      labels:
+        app: bwce-account-rest
+    spec:
+      containers:
+      - name: bwce-account-rest
+        image: gcr.io/test-tibco-bw-5/restaccount:1.0.0
+        ports:
+        - name: bwce-rest-port
+          containerPort: 8080

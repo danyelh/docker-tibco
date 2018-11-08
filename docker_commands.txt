@@ -1,0 +1,7 @@
+docker network create --driver overlay private_bw_network --attachable
+
+docker run -d -p 8080:8080 --net=private_bw_network tibadmin:5.10.0
+
+docker run -d -p 7222:7222 --net=private_bw_network tibems:8.4.0
+
+docker run -d --net=private_bw_network sampleproject:1.0.0

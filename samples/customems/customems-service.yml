@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: customems
+  labels:
+    app: customems
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 7222
+    targetPort: customems-port
+  selector:
+    app: customems

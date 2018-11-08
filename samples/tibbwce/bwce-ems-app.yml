@@ -1,0 +1,76 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: custom-ems
+  labels:
+    app: custom-ems
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+        app: custom-ems
+  template:
+    metadata:
+      labels:
+        app: custom-ems
+    spec:
+      containers:
+      - name: custom-ems
+        image: gcr.io/test-tibco-bw-5/customems:1.0.0
+        ports:
+        - name: custom-ems-port
+          containerPort: 7222
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: custom-ems-server
+  labels:
+    app: bwce-ems-app
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 7222
+    targetPort: custom-ems-port
+  selector:
+    app: custom-ems
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: emsclient
+  labels:
+    app: bwce-ems-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+        app: bwce-ems-app
+  template:
+    metadata:
+      labels:
+        app: bwce-ems-app
+    spec:
+      containers:
+      - name: emsclient
+        image: gcr.io/test-tibco-bw-5/emsclient:1.0.0
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: emssample
+  labels:
+    app: bwce-ems-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+        app: bwce-ems-app
+  template:
+    metadata:
+      labels:
+        app: bwce-ems-app
+    spec:
+      containers:
+      - name: emssample
+        image: gcr.io/test-tibco-bw-5/emssample:3.0.0
